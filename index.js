@@ -1,10 +1,13 @@
 const express = require("express");
 const app = express();
+const cors=require("cors")
+app.use(cors())
 app.use(express.json())
 const bcrypt =require("bcrypt")
 const sqlite3 = require("sqlite3");
 const { open } = require("sqlite");
 const path = require("path");
+const { request } = require("http");
 const dbPath = path.join(__dirname, "users.db");
 
 let db = null;
@@ -63,4 +66,14 @@ app.post("/login",async(request,response)=>{
         response.status=400;
         response.send("user Not Found")
     }
+})
+
+app.get("/",(request,response)=>{
+    response.send("This is Home Page Make another requests")
+})
+
+app.get("/users",async(request,response)=>{
+    const getAllUsersQuery=`SELECT * FROM user;`
+    const getAllUser=await db.all(getAllUsersQuery)
+    response.send(getAllUser.map(user=>({name:user.name})))
 })
